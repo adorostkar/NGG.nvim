@@ -4,7 +4,7 @@ M.glypherModule = 'lua/NGG'
 M.glypherPath = M.glypherModule .. '/glypher.lua'
 
 M.update = function()
-    vim.notify("Calling update")
+    vim.notify("NGG: Update Glyphs", vim.log.levels.INFO)
     os.execute('python3 scripts/glypher.py -f ' .. M.glypherPath) -- replace with plenary job
 end
 
@@ -31,7 +31,9 @@ M.telescope = function()
                 entry_maker = function(entry)
                     return {
                         value = entry,
-                        display = string.format("%-40s %s", entry.key, entry.value),
+                        display = function(entr)
+                            return string.format("%-40s %s", entr.value.key, entr.value.value)
+                        end,
                         ordinal = entry.key,
                     }
                 end
@@ -42,7 +44,7 @@ M.telescope = function()
                     actions.close(prompt_bufnr)
                     local selection = action_state.get_selected_entry()
                     vim.fn.setreg('"', selection.value.value)
-                    vim.notify('NGG: Yanked to default register')
+                    vim.notify('NGG: '.. selection.value.value .. ' Yanked to default register', vim.log.levels.INFO)
                 end)
 
                 return true
