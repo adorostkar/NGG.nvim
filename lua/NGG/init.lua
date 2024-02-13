@@ -4,8 +4,22 @@ M.glypherModule = 'lua/NGG'
 M.glypherPath = M.glypherModule .. '/glypher.lua'
 
 M.update = function()
-    vim.notify("NGG: Update Glyphs", vim.log.levels.INFO)
-    os.execute('python3 scripts/glypher.py -f ' .. M.glypherPath) -- replace with plenary job
+    local Job = require'plenary.job'
+    vim.notify('NGG: Updating Glyphs', vim.log.levels.DEBUG)
+    if not Job then
+        os.execute('python3 scripts/glypher.py -f ' .. M.glypherPath) -- replace with plenary job
+        vim.notify('NGG: Done Updating Glyphs', vim.log.levels.INFO)
+        return
+    end
+
+    vim.notify('NGG: Found Plenary!!', vim.log.levels.DEBUG)
+    Job:new({
+        command = 'python3',
+        args = { 'scripts/glypher.py', '-f', M.glypherPath },
+        on_exit = function(j, return_val)
+            vim.notify('NGG: Done Updating Glyphs', vim.log.levels.INFO)
+        end,
+    }):start()
 end
 
 M.setup = function(opts)
