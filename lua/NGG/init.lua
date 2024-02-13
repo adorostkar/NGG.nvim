@@ -11,8 +11,34 @@ M.setup = function(opt)
     if vim.fn.exists(M.glypherPath) == 0 then
         M.update()
     end
-    local glyphs = require('NGG.glypher')
-    -- glyphs.GetGlyphs()
+end
+
+M.telescope = function()
+    local glyphs = require('NGG.glypher').GetGlyphs()
+    local pickers = require "telescope.pickers"
+    local finders = require "telescope.finders"
+    local conf = require("telescope.config").values
+
+    local colors = function(opts)
+        opts = opts or {}
+        pickers.new(opts, {
+            prompt_title = "Glyph",
+            finder = finders.new_table {
+                results = glyphs,
+                entry_maker = function(entry)
+                    return {
+                        value = entry,
+                        display = string.format("%-40s %s", entry.key, entry.value),
+                        ordinal = entry.key,
+                    }
+                end
+            },
+            sorter = conf.generic_sorter(opts),
+        }):find()
+    end
+
+    -- to execute the function
+    colors()
 end
 
 return M

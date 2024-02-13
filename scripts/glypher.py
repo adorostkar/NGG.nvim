@@ -14,15 +14,15 @@ def write_to_file(text, file_path):
     for line in text.split('\n'):
         components = line.split(':')
         if len(components) == 2:
-            key = components[0].strip(' "').replace("-", "_")
+            key = components[0].strip().replace("-", "_")
             # Extract the Unicode hex value, convert it, and format it as an actual Unicode character
             hex_value = components[1].strip().replace('"', '').replace(',', '')
             unicode_char = chr(int(hex_value, 16))
-            f.write(f"\t{key} = \"{unicode_char}\",\n")
+            f.write(f"\t{{ key = {key}, value = \"{unicode_char}\", }},\n")
+
     f.write('}\n')
     f.write('end\n')
     f.write('return M')
-
     f.close()
 
 
