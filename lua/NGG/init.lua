@@ -30,19 +30,16 @@ M.setup = function(opts)
 end
 
 M.show_finder = function()
-    local pickers = require "telescope.pickers"
-    local finders = require "telescope.finders"
-    local actions = require('telescope.actions')
-    local action_state = require('telescope.actions.state')
+    local pickers = require("telescope.pickers")
+    local finders = require("telescope.finders")
+    local actions = require("telescope.actions")
+    local action_state = require("telescope.actions.state")
     local conf = require("telescope.config").values
 
     local chunk, _ = loadfile(M.glypherPath)
     local glyphs = {}
     if chunk then
-        -- Execute the chunk to define 'foo' in the current environment
-        local M = chunk()
-
-        glyphs = M.GetGlyphs()
+        glyphs = chunk().GetGlyphs()
     end
 
     local show_telescope = function(opts)
