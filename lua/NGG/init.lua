@@ -29,7 +29,7 @@ M.setup = function(opts)
     end
 end
 
-M.telescope = function()
+M.show_finder = function()
     local pickers = require "telescope.pickers"
     local finders = require "telescope.finders"
     local actions = require('telescope.actions')
@@ -45,7 +45,7 @@ M.telescope = function()
         glyphs = M.GetGlyphs()
     end
 
-    local colors = function(opts)
+    local show_telescope = function(opts)
         opts = opts or {}
         pickers.new(opts, {
             prompt_title = "Glyph Description",
@@ -76,7 +76,7 @@ M.telescope = function()
     end
 
     -- to execute the function
-    colors(M.opts.telescope)
+    show_telescope(M.opts.telescope)
 end
 
 return M
