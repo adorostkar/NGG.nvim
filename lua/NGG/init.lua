@@ -1,10 +1,10 @@
 local M = {}
 
-M.glypherModule = 'lua/NGG'
-M.glypherPath = M.glypherModule .. '/glypher.lua'
+M.glypherDir = vim.fn.stdpath('cache')
+M.glypherPath = M.glypherDir .. '/glypher.lua'
 
 M.update = function()
-    local Job = require'plenary.job'
+    local Job = require('plenary.job')
     vim.notify('NGG: Updating Glyphs', vim.log.levels.DEBUG)
     if not Job then
         os.execute('python3 scripts/glypher.py -f ' .. M.glypherPath) -- replace with plenary job
@@ -16,25 +16,35 @@ M.update = function()
     Job:new({
         command = 'python3',
         args = { 'scripts/glypher.py', '-f', M.glypherPath },
-        on_exit = function(j, return_val)
+        on_exit = function(_, _)
             vim.notify('NGG: Done Updating Glyphs', vim.log.levels.INFO)
         end,
     }):start()
 end
 
 M.setup = function(opts)
+    M.opts = opts
     if vim.fn.filereadable(M.glypherPath) == 0 then
         M.update()
     end
 end
 
 M.telescope = function()
-    local glyphs = require('NGG.glypher').GetGlyphs()
+    -- local glyphs = require('NGG.glypher').GetGlyphs()
     local pickers = require "telescope.pickers"
     local finders = require "telescope.finders"
     local actions = require('telescope.actions')
     local action_state = require('telescope.actions.state')
     local conf = require("telescope.config").values
+
+    local chunk, _ = loadfile(M.glypherPath)
+    local glyphs = {}
+    if chunk then
+        -- Execute the chunk to define 'foo' in the current environment
+        local M = chunk()
+
+        glyphs = M.GetGlyphs()
+    end
 
     local colors = function(opts)
         opts = opts or {}
@@ -67,7 +77,7 @@ M.telescope = function()
     end
 
     -- to execute the function
-    colors()
+    colors(M.opts.telescope)
 end
 
 return M
