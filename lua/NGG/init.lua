@@ -30,7 +30,6 @@ M.setup = function(opts)
 end
 
 M.telescope = function()
-    -- local glyphs = require('NGG.glypher').GetGlyphs()
     local pickers = require "telescope.pickers"
     local finders = require "telescope.finders"
     local actions = require('telescope.actions')
@@ -49,7 +48,7 @@ M.telescope = function()
     local colors = function(opts)
         opts = opts or {}
         pickers.new(opts, {
-            prompt_title = "Glyph",
+            prompt_title = "Glyph Description",
             finder = finders.new_table {
                 results = glyphs,
                 entry_maker = function(entry)
