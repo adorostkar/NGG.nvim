@@ -1,5 +1,5 @@
-
 local M = {}
+
 M.glypherModule = 'lua/NGG'
 M.glypherPath = M.glypherModule .. '/glypher.lua'
 
@@ -17,6 +17,8 @@ M.telescope = function()
     local glyphs = require('NGG.glypher').GetGlyphs()
     local pickers = require "telescope.pickers"
     local finders = require "telescope.finders"
+    local actions = require('telescope.actions')
+    local action_state = require('telescope.actions.state')
     local conf = require("telescope.config").values
 
     local colors = function(opts)
@@ -34,6 +36,15 @@ M.telescope = function()
                 end
             },
             sorter = conf.generic_sorter(opts),
+            attach_mappings = function(prompt_bufnr, map)
+                actions.select_default:replace(function() -- default action is yank
+                    actions.close(prompt_bufnr)
+                    local selection = action_state.get_selected_entry()
+                    vim.fn.setreg('"', selection.value.value)
+                end)
+
+                return true
+            end,
         }):find()
     end
 
