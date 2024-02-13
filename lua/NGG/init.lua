@@ -35,6 +35,7 @@ M.show_finder = function()
     local actions = require("telescope.actions")
     local action_state = require("telescope.actions.state")
     local conf = require("telescope.config").values
+    local themes = require("telescope.themes")
 
     local chunk, _ = loadfile(M.glypherPath)
     local glyphs = {}
@@ -43,8 +44,9 @@ M.show_finder = function()
     end
 
     local show_telescope = function(opts)
-        opts = opts or {}
+        opts = vim.tbl_extend('force', themes.get_dropdown(), opts or {})
         pickers.new(opts, {
+            theme = "dropdown",
             prompt_title = "Glyph Description",
             finder = finders.new_table {
                 results = glyphs,
@@ -74,6 +76,48 @@ M.show_finder = function()
 
     -- to execute the function
     show_telescope(M.opts.telescope)
+end
+
+M.show_finder2 = function()
+    local Input = require("nui.input")
+    local event = require("nui.utils.autocmd").event
+
+    local input = Input(
+        {
+            position = "50%",
+            size = {
+                width = 20,
+            },
+            border = {
+                style = "single",
+                text = {
+                    top = "Glyph Description",
+                    top_align = "center",
+                },
+            },
+            win_options = {
+                winhighlight = "Normal:Normal,FloatBorder:Normal",
+            },
+        }, {
+            prompt = "> ",
+            on_close = function()
+                print("Input Closed!")
+            end,
+            on_submit = function(value)
+                print("Input Submitted: " .. value)
+            end,
+            on_change = function(value)
+                print("Value changed: ", value)
+            end,
+        })
+
+    -- mount/open the component
+    input:mount()
+
+    -- unmount component when cursor leaves buffer
+    input:on(event.BufLeave, function()
+        input:unmount()
+    end)
 end
 
 return M
