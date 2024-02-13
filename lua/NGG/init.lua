@@ -4,11 +4,12 @@ M.glypherModule = 'lua/NGG'
 M.glypherPath = M.glypherModule .. '/glypher.lua'
 
 M.update = function()
+    vim.notify("Calling update")
     os.execute('python3 scripts/glypher.py -f ' .. M.glypherPath) -- replace with plenary job
 end
 
-M.setup = function(opt)
-    if vim.fn.exists(M.glypherPath) == 0 then
+M.setup = function(opts)
+    if vim.fn.filereadable(M.glypherPath) == 0 then
         M.update()
     end
 end
@@ -36,11 +37,12 @@ M.telescope = function()
                 end
             },
             sorter = conf.generic_sorter(opts),
-            attach_mappings = function(prompt_bufnr, map)
+            attach_mappings = function(prompt_bufnr, _)
                 actions.select_default:replace(function() -- default action is yank
                     actions.close(prompt_bufnr)
                     local selection = action_state.get_selected_entry()
                     vim.fn.setreg('"', selection.value.value)
+                    vim.notify('NGG: Yanked to default register')
                 end)
 
                 return true
