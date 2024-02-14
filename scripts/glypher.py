@@ -5,8 +5,13 @@ import os.path
 import requests
 import re
 
+def maximum(a, b):
+    if a >= b:
+        return a
+    return b
 
 def write_to_file(text, file_path):
+    maxKeySize = 0
     f = open(file_path, "w")
     f.write('local M = {}\n')
     f.write('function M.GetGlyphs()\n')
@@ -15,6 +20,7 @@ def write_to_file(text, file_path):
         components = line.split(':')
         if len(components) == 2:
             key = components[0].strip().replace("-", "_")
+            maxKeySize = maximum(maxKeySize, len(key))
             # Extract the Unicode hex value, convert it, and format it as an actual Unicode character
             hex_value = components[1].strip().replace('"', '').replace(',', '')
             unicode_char = chr(int(hex_value, 16))
@@ -22,6 +28,8 @@ def write_to_file(text, file_path):
 
     f.write('}\n')
     f.write('end\n')
+    f.write('function M.MaxKeySize()\n')
+    f.write(f"return {maxKeySize}\nend\n")
     f.write('return M')
     f.close()
 

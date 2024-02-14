@@ -30,23 +30,27 @@ M.setup = function(opts)
 end
 
 M.show_finder = function()
-    local pickers = require("telescope.pickers")
-    local finders = require("telescope.finders")
-    local actions = require("telescope.actions")
-    local action_state = require("telescope.actions.state")
-    local conf = require("telescope.config").values
-    local themes = require("telescope.themes")
 
     local chunk, _ = loadfile(M.glypherPath)
     local glyphs = {}
+    local maxKeySize = 40
     if chunk then
-        glyphs = chunk().GetGlyphs()
+        local N = chunk()
+        glyphs = N.GetGlyphs()
+        maxKeySize = N.MaxKeySize()
     end
 
     local show_telescope = function(opts)
-        opts = vim.tbl_extend('force', themes.get_dropdown(), opts or {})
+        local pickers = require("telescope.pickers")
+        local finders = require("telescope.finders")
+        local actions = require("telescope.actions")
+        local action_state = require("telescope.actions.state")
+        local conf = require("telescope.config").values
+        local themes = require("telescope.themes")
+
+        opts = vim.tbl_extend('force', themes.get_dropdown(), opts or { layout_config = {width = maxKeySize + 8}, prompt_prefix= ' ? '})
+        local formatStr = "%-" .. tostring(maxKeySize) .. "s %s"
         pickers.new(opts, {
-            theme = "dropdown",
             prompt_title = "Glyph Description",
             finder = finders.new_table {
                 results = glyphs,
@@ -54,7 +58,7 @@ M.show_finder = function()
                     return {
                         value = entry,
                         display = function(entr)
-                            return string.format("%-40s %s", entr.value.key, entr.value.value)
+                            return string.format(formatStr, entr.value.key, entr.value.value)
                         end,
                         ordinal = entry.key,
                     }
